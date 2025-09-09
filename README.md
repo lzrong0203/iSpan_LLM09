@@ -6,6 +6,25 @@
 
 ---
 
+> ⚠️ **重要提醒 / Important Notice**
+> 
+> 本教材內容為 AI (Claude Opus 4.1) 自動生成的初步版本，僅供參考使用。
+> 
+> 實際課程內容將根據授課需求持續調整與優化，請以最終版本為準。
+> 
+> *This material is an AI-generated preliminary version for reference only.*
+> 
+> *The actual course content will be continuously adjusted and optimized based on teaching requirements.*
+
+---
+
+## 📎 課程資料
+
+- **投影片：** [2025-0913 LLM.pdf](./2025-0913%20LLM.pdf)
+- **更新時間：** 2025年9月9日
+
+---
+
 # 課程大綱總覽
 
 ## 第一天 (6小時)
