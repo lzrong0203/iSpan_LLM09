@@ -27,6 +27,7 @@ wheels/
 venv/
 env/
 ENV/
+llm_pure/
 
 # IDE
 .vscode/
