@@ -52,3 +52,9 @@ Thumbs.db
 
 # pyenv
 .python-version
+
+# 講師備課資料（不公開給學員）
+instructor_notes/
+*_instructor_guide.md
+*_teaching_notes.md
+teaching_materials/
