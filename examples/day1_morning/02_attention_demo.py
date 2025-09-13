@@ -9,6 +9,7 @@ print("像是閱讀理解時的「重點標記」")
 print("AI決定要「注意」哪些字")
 print()
 
+
 # === Step 2: 簡單的Attention示範 ===
 def simple_attention(query, keys, values):
     """
@@ -22,18 +23,19 @@ def simple_attention(query, keys, values):
     for key in keys:
         score = sum(q * k for q, k in zip(query, key))
         scores.append(score)
-    
+
     # 轉換成機率（softmax的簡化版）
     total = sum(scores)
-    weights = [s/total for s in scores]
-    
+    weights = [s / total for s in scores]
+
     # 加權平均
     result = [0] * len(values[0])
     for weight, value in zip(weights, values):
         for i in range(len(value)):
             result[i] += weight * value[i]
-    
+
     return weights, result
+
 
 # === Step 3: 實際例子 ===
 print("=== 實際例子：理解「我愛貓」===")
@@ -71,8 +73,8 @@ tokens = ["今天", "天氣", "很", "好"]
 # 模擬attention矩陣
 attention_matrix = [
     [0.7, 0.2, 0.05, 0.05],  # 今天 看其他字
-    [0.3, 0.5, 0.1, 0.1],    # 天氣 看其他字  
-    [0.1, 0.3, 0.2, 0.4],    # 很 看其他字
+    [0.3, 0.5, 0.1, 0.1],  # 天氣 看其他字
+    [0.1, 0.3, 0.2, 0.4],  # 很 看其他字
     [0.05, 0.15, 0.3, 0.5],  # 好 看其他字
 ]
 

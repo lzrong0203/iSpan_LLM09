@@ -18,7 +18,7 @@ test_texts = [
     "Hello World!",
     "今天天氣很好",
     "Machine Learning is fascinating",
-    "人工智慧大型語言模型實作應用班"
+    "人工智慧大型語言模型實作應用班",
 ]
 
 print("不同文字的 Token 計算結果：")
@@ -26,10 +26,10 @@ print("-" * 60)
 for text in test_texts:
     tokens = encoding_gpt35.encode(text)
     token_count = len(tokens)
-    
+
     # 顯示每個 token
     token_strings = [encoding_gpt35.decode([token]) for token in tokens]
-    
+
     print(f"文字：{text}")
     print(f"Token 數量：{token_count}")
     print(f"Token 切分：{token_strings}")
@@ -138,25 +138,30 @@ print()
 # === Step 6: 實用函數：計算對話的 Token 數 ===
 print("=== 實用函數：計算對話的 Token 數 ===")
 
+
 def count_tokens(messages, model="gpt-3.5-turbo"):
     """計算對話列表的總 token 數"""
     encoding = tiktoken.encoding_for_model(model)
     total_tokens = 0
-    
+
     for message in messages:
         # 每個訊息有角色和內容
         role_tokens = len(encoding.encode(message["role"]))
         content_tokens = len(encoding.encode(message["content"]))
         total_tokens += role_tokens + content_tokens + 3  # 加3是因為特殊標記
-    
+
     total_tokens += 3  # 對話開始和結束的特殊標記
     return total_tokens
+
 
 # 測試對話
 conversation = [
     {"role": "system", "content": "你是一個幫助使用者的助手"},
     {"role": "user", "content": "什麼是機器學習？"},
-    {"role": "assistant", "content": "機器學習是人工智慧的一個分支，讓電腦能從數據中學習。"}
+    {
+        "role": "assistant",
+        "content": "機器學習是人工智慧的一個分支，讓電腦能從數據中學習。",
+    },
 ]
 
 total_tokens = count_tokens(conversation)

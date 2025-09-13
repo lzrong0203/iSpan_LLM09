@@ -10,14 +10,18 @@ Observation 將是執行這些行動的結果。
 
 
 fetch_ticker:
-找出一段文字中所描述的金融商品、標的或是整個市場
-例如：fetch_ticker： 一段文字"今天 CPI 低於預期" 標的為"市場"
-     fetch_ticker: 一段文字"台積電今天不太行" 標的為"台積電"
+分析一段文字，讓你判斷其中的金融商品標的
+例如：fetch_ticker: "今天台積電股價不太行"
+返回原文給你分析
 
 fetch_stock_data:
-例如 fetch_stock_data: 台積電
-台積電在yfinance的代號為 2330.tw
-查詢近期股價變化
+使用股票代碼查詢近期股價變化
+例如 fetch_stock_data: 2330.TW
+重要股票代碼：
+- 台積電: 2330.TW
+- 鴻海: 2317.TW
+- 聯發科: 2454.TW
+注意：必須使用完整股票代碼（如 2330.TW）
 
 analyze_sentiment:
 例如 analyze_sentiment: 台積電
@@ -27,51 +31,58 @@ Runs a analyze_sentiment and returns results
 
 範例對話：
 
-Question: 台積電將調高資本資出
-Thought: 這句話的金融標的為何
-Action: 分析標的: 台積電將調高資本資出
+Question: 今天台積電股價不太行
+Thought: 我需要先分析這句話的金融標的
+Action: fetch_ticker: 今天台積電股價不太行
 PAUSE
 
-這時會返回：
+Observation: 今天台積電股價不太行
 
-Observation: 這句話的標的為"台積電"
-
-接下來你會執行：
-
-Action: fetch_stock_data: 台積電
-台積電在 yfinance 的代號為 2330.tw
+Thought: 這句話提到的是"台積電"，我知道台積電的股票代碼是 2330.TW。現在查詢股價資料。
+Action: fetch_stock_data: 2330.TW
 PAUSE
 
-Observation: 台積電最近五天股價變化（例如：-20, -10, 0, 20）
+Observation: 最近五天股價變化為：-0.025
 
-接下來你會執行：
-
-Action: analyze_sentiment: 最近五天股價變化為（例如：-20, -10, 0, 20），"台積電將調高資本資出"的情緒為?
+Thought: 現在分析這句話的情緒
+Action: analyze_sentiment: 今天台積電股價不太行
 PAUSE
 
-最後你輸出：
+Observation: 負面
 
-Answer: 標的：台積電，情緒：正面，股價變化：例如：-20, -10, 0, 20）
+Answer: 標的：台積電 (2330.TW)，情緒：負面，股價變化：-2.5%
 """
 
 import re
 
+
 def extract_stock_code(text):
-    # 定義股票代碼的正則表達式模式（以 2454.tw 為例）
-    pattern = r'\b\d{4}\.tw\b'
+    # 定義股票代碼的正則表達式模式（支援 .tw 或 .TW）
+    pattern = r"\b\d{4}\.[Tt][Ww]\b"
 
     # 使用正則表達式搜索文本中的股票代碼
     match = re.search(pattern, text)
 
     if match:
-        return match.group(0)
+        return match.group(0).upper()  # 統一轉成大寫
     else:
         return None
 
+
 def fetch_stock_data(text):
-    ticker = extract_stock_code(text)
+    # 如果直接傳入的就是股票代碼格式，直接使用
+    if re.match(r"^\d{4}\.[Tt][Ww]$", text.strip()):
+        ticker = text.strip().upper()
+    else:
+        ticker = extract_stock_code(text)
+
     print("=======", ticker)
+
+    if ticker is None:
+        return "無法識別股票代碼"
+
     import yfinance as yf
+
     # 使用 yfinance 下載指定股票代碼的數據
     stock = yf.Ticker(ticker)
 
@@ -82,23 +93,29 @@ def fetch_stock_data(text):
     # print(data)
     change = data.Close.diff(4).iloc[-1]
     # print(change)
-    ratio = change / data.Close[-1]
+    ratio = change / data.Close.iloc[-1]
     return "最近五天股價變化為：" + str(round(ratio, 3))
 
 
-action_re = re.compile('^Action: (\w+): (.*)$')
+action_re = re.compile("^Action: (\w+): (.*)$")
+
 
 def fetch_ticker(text):
-  return f"Observation: {text}"
+    # 直接返回輸入文字，讓 LLM 自己判斷
+    return text
+
 
 def analyze_sentiment(text):
-  return f"Observation: {text}"
+    return f"Observation: {text}"
+
 
 known_actions = {
     "fetch_ticker": fetch_ticker,
     "fetch_stock_data": fetch_stock_data,
-    "analyze_sentiment": analyze_sentiment
+    "analyze_sentiment": analyze_sentiment,
 }
+
+
 def query(question, max_turns=5):
     i = 0
     bot = Agent(system_prompt)
@@ -107,11 +124,7 @@ def query(question, max_turns=5):
         i += 1
         result = bot(next_prompt)
         print(result)
-        actions = [
-            action_re.match(a)
-            for a in result.split('\n')
-            if action_re.match(a)
-        ]
+        actions = [action_re.match(a) for a in result.split("\n") if action_re.match(a)]
         if actions:
             # There is an action to run
             action, action_input = actions[0].groups()
@@ -119,13 +132,12 @@ def query(question, max_turns=5):
                 raise Exception("Unknown action: {}: {}".format(action, action_input))
             print(" -- running {} {}".format(action, action_input))
             if "fetch_stock_data" in action:
-              action_input = result
+                action_input = result
             observation = known_actions[action](action_input)
             print("Observation:", observation)
             next_prompt = "Observation: {}".format(observation)
         else:
             return
-     
 
 
 if __name__ == "__main__":
