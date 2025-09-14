@@ -201,8 +201,8 @@ class RAGSystem:
                     },
                     {"role": "user", "content": prompt},
                 ],
-                temperature=0.3,
-                max_tokens=200,
+                temperature=0,
+                # max_tokens=200,
             )
             answer = response.choices[0].message.content
         except Exception as e:

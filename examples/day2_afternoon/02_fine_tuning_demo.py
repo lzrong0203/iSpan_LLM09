@@ -48,34 +48,72 @@ class DatasetPreparer:
         """準備PTT風格資料"""
         print("準備PTT鄉民風格資料...")
 
-        # PTT風格範例
-        ptt_examples = [
-            {
-                "instruction": "用PTT鄉民的語氣回答",
-                "input": "最近股市會漲嗎？",
-                "output": "all in就對了啦，輸了再來發文取暖，嘻嘻",
-            },
-            {
-                "instruction": "用PTT鄉民的語氣回答",
-                "input": "該買房還是租房？",
-                "output": "買不起啦QQ，繼續當社畜存頭期款，唉",
-            },
-            {
-                "instruction": "用PTT鄉民的語氣回答",
-                "input": "工作壓力好大怎麼辦？",
-                "output": "先推文再說，下班買鹹酥雞壓壓驚，給你拍拍",
-            },
-            {
-                "instruction": "用PTT鄉民的語氣回答",
-                "input": "要怎麼脫單？",
-                "output": "先減肥啦，然後記得洗澡，認真回",
-            },
-            {
-                "instruction": "用PTT鄉民的語氣回答",
-                "input": "推薦什麼美食？",
-                "output": "巷口滷肉飯，便宜又大碗，真香",
-            },
-        ]
+        # 從 ptt_gossiping_dataset_100.json 載入資料
+        dataset_path = "/home/lzrong/iSpan/LLM09/ptt_gossiping_dataset_100.json"
+
+        try:
+            with open(dataset_path, "r", encoding="utf-8") as f:
+                # 逐行讀取 JSON 資料
+                lines = f.readlines()
+                ptt_examples = []
+
+                for line in lines[:10]:  # 使用前10筆資料作為範例
+                    data = json.loads(line.strip())
+                    text = data["text"]
+
+                    # 解析格式化的文字
+                    # 格式：[INST] 指令：... 問題：... [/INST] 回答
+                    if "[INST]" in text and "[/INST]" in text:
+                        parts = text.split("[/INST]")
+                        instruction_part = parts[0].replace("[INST]", "").strip()
+                        output = parts[1].replace("</s>", "").replace("<s>", "").strip()
+
+                        # 提取問題
+                        if "問題：" in instruction_part:
+                            input_text = instruction_part.split("問題：")[1].strip()
+                        else:
+                            input_text = instruction_part
+
+                        ptt_examples.append({
+                            "instruction": "用PTT鄉民的語氣回答",
+                            "input": input_text,
+                            "output": output
+                        })
+
+                # 如果無法載入外部資料，使用預設範例
+                if not ptt_examples:
+                    raise Exception("無法解析資料")
+
+        except Exception as e:
+            print(f"載入外部資料失敗: {e}，使用預設範例")
+            # 預設範例作為備用
+            ptt_examples = [
+                {
+                    "instruction": "用PTT鄉民的語氣回答",
+                    "input": "最近股市會漲嗎？",
+                    "output": "all in就對了啦，輸了再來發文取暖，嘻嘻",
+                },
+                {
+                    "instruction": "用PTT鄉民的語氣回答",
+                    "input": "該買房還是租房？",
+                    "output": "買不起啦QQ，繼續當社畜存頭期款，唉",
+                },
+                {
+                    "instruction": "用PTT鄉民的語氣回答",
+                    "input": "工作壓力好大怎麼辦？",
+                    "output": "先推文再說，下班買鹹酥雞壓壓驚，給你拍拍",
+                },
+                {
+                    "instruction": "用PTT鄉民的語氣回答",
+                    "input": "要怎麼脫單？",
+                    "output": "先減肥啦，然後記得洗澡，認真回",
+                },
+                {
+                    "instruction": "用PTT鄉民的語氣回答",
+                    "input": "推薦什麼美食？",
+                    "output": "巷口滷肉飯，便宜又大碗，真香",
+                },
+            ]
 
         for example in ptt_examples:
             self.add_example(

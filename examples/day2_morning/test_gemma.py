@@ -13,7 +13,7 @@ else:
     print("Hugging Face token not found in environment variables.")
 
 processor = AutoProcessor.from_pretrained("google/gemma-3-4b-it")
-model = AutoModelForImageTextToText.from_pretrained("google/gemma-3-4b-it")
+model = AutoModelForImageTextToText.from_pretrained("google/gemma-3-4b-it", device="cpu")
 messages = [
     {
         "role": "user",
