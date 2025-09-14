@@ -30,7 +30,7 @@ print()
 
 
 # === Step 3: 使用OpenAI生成Embeddings ===
-def get_embedding(text: str, model="text-embedding-ada-002") -> List[float]:
+def get_embedding(text: str, model="text-embedding-ada-003") -> List[float]:
     """
     使用OpenAI API生成文字向量
     """
@@ -48,7 +48,7 @@ print("=== 生成Embeddings ===")
 print()
 
 # 測試文字
-test_texts = ["機器學習", "深度學習", "今天天氣很好"]
+test_texts = ["蘋果", "香蕉", "橘子", "手機"]
 
 embeddings = {}
 for text in test_texts:
