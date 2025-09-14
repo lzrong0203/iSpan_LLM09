@@ -1,0 +1,32 @@
+# RAG System Requirements
+# For llama3_rag_system.py and gemma3_rag_ollama.py
+
+# Core ML/AI packages
+torch>=2.0.0
+transformers>=4.35.0
+sentence-transformers>=2.2.0
+
+# Vector database
+faiss-cpu>=1.7.4  # Use faiss-gpu if you have CUDA
+
+# PDF processing
+pypdf>=3.17.0
+PyPDF2>=3.0.0
+
+# Data processing
+numpy>=1.24.0
+pandas>=2.0.0
+
+# API requests (for Ollama)
+requests>=2.31.0
+
+# Optional: For Llama3 local deployment
+accelerate>=0.24.0
+bitsandbytes>=0.41.0  # For quantization
+
+# Optional: For better tokenization
+sentencepiece>=0.1.99
+protobuf>=3.20.0
+
+# Optional: Progress bars
+tqdm>=4.65.0
