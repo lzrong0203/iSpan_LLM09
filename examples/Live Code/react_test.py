@@ -97,8 +97,7 @@ def fetch_stock_data(text):
     return "最近五天股價變化為：" + str(round(ratio, 3))
 
 
-action_re = re.compile("^Action: (\w+): (.*)$")
-
+action_re = re.compile(r'^Action: (\w+): (.*)$')
 
 def fetch_ticker(text):
     # 直接返回輸入文字，讓 LLM 自己判斷
