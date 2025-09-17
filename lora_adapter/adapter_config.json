@@ -1,0 +1,9 @@
+{
+  "base_model": "llama2",
+  "lora_rank": 8,
+  "lora_alpha": 16,
+  "target_modules": [
+    "q_proj",
+    "v_proj"
+  ]
+}

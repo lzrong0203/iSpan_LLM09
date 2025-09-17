@@ -1,8 +1,8 @@
 # Day 2 下午：部署方案
 # 15:30-16:30 實際部署
 
-import os
 import json
+import os
 from datetime import datetime
 
 # === Step 1: 部署選項總覽 ===
@@ -14,32 +14,32 @@ deployment_options = {
         "難度": "⭐",
         "費用": "免費",
         "特點": "一行程式碼分享",
-        "適合": "快速原型、展示"
+        "適合": "快速原型、展示",
     },
     "Hugging Face Spaces": {
         "難度": "⭐⭐",
         "費用": "免費/付費",
         "特點": "永久託管、自動部署",
-        "適合": "開源專案、Portfolio"
+        "適合": "開源專案、Portfolio",
     },
     "Streamlit Cloud": {
         "難度": "⭐⭐",
         "費用": "免費",
         "特點": "GitHub整合",
-        "適合": "資料應用、儀表板"
+        "適合": "資料應用、儀表板",
     },
     "Docker": {
         "難度": "⭐⭐⭐",
         "費用": "依平台",
         "特點": "容器化、可移植",
-        "適合": "企業部署"
+        "適合": "企業部署",
     },
     "雲端服務": {
         "難度": "⭐⭐⭐⭐",
         "費用": "按用量計費",
         "特點": "可擴展、高可用",
-        "適合": "生產環境"
-    }
+        "適合": "生產環境",
+    },
 }
 
 for name, info in deployment_options.items():
@@ -52,7 +52,7 @@ for name, info in deployment_options.items():
 print("=== Gradio快速分享 ===")
 print()
 
-gradio_code = '''import gradio as gr
+gradio_code = """import gradio as gr
 
 def chatbot(message):
     return f"你說了：{message}"
@@ -67,7 +67,7 @@ demo = gr.Interface(
 
 # 啟動並分享
 demo.launch(share=True)  # share=True 產生公開連結
-'''
+"""
 
 print("Gradio分享程式碼：")
 print(gradio_code)
@@ -81,11 +81,12 @@ print()
 print("=== Hugging Face Spaces部署 ===")
 print()
 
+
 def create_hf_space_files():
     """建立Hugging Face Space所需檔案"""
-    
+
     # app.py
-    app_content = '''import gradio as gr
+    app_content = """import gradio as gr
 from transformers import pipeline
 
 # 載入模型
@@ -106,16 +107,16 @@ demo = gr.Interface(
 
 if __name__ == "__main__":
     demo.launch()
-'''
-    
+"""
+
     # requirements.txt
-    requirements = '''gradio==4.0.0
+    requirements = """gradio==4.0.0
 transformers==4.35.0
 torch==2.1.0
-'''
-    
+"""
+
     # README.md
-    readme = '''---
+    readme = """---
 title: 情感分析工具
 emoji: 😊
 colorFrom: blue
@@ -129,26 +130,27 @@ pinned: false
 # 情感分析工具
 
 這是一個使用Transformers的情感分析應用。
-'''
-    
+"""
+
     print("需要建立的檔案：")
     print("\n1. app.py (主程式)")
     print("-" * 40)
     print(app_content[:200] + "...")
-    
+
     print("\n2. requirements.txt (依賴)")
     print("-" * 40)
     print(requirements)
-    
+
     print("3. README.md (配置)")
     print("-" * 40)
     print(readme[:150] + "...")
-    
+
     return {
         "app.py": app_content,
         "requirements.txt": requirements,
-        "README.md": readme
+        "README.md": readme,
     }
+
 
 # 建立檔案
 hf_files = create_hf_space_files()
@@ -164,7 +166,7 @@ print()
 print("=== Docker容器化 ===")
 print()
 
-dockerfile_content = '''# 使用Python基礎映像
+dockerfile_content = """# 使用Python基礎映像
 FROM python:3.9-slim
 
 # 設定工作目錄
@@ -184,9 +186,9 @@ EXPOSE 7860
 
 # 啟動應用
 CMD ["python", "app.py"]
-'''
+"""
 
-docker_compose = '''version: '3.8'
+docker_compose = """version: '3.8'
 
 services:
   ai-app:
@@ -198,7 +200,7 @@ services:
     volumes:
       - ./data:/app/data
     restart: unless-stopped
-'''
+"""
 
 print("Dockerfile:")
 print("-" * 40)
@@ -218,9 +220,10 @@ print()
 print("=== 環境變數管理 ===")
 print()
 
+
 def create_env_file():
     """建立環境變數檔案"""
-    env_template = '''# OpenAI設定
+    env_template = """# OpenAI設定
 OPENAI_API_KEY=sk-your-key-here
 OPENAI_MODEL=gpt-3.5-turbo
 
@@ -234,11 +237,11 @@ DATABASE_URL=sqlite:///app.db
 
 # 安全設定
 SECRET_KEY=your-secret-key-here
-'''
-    
+"""
+
     print(".env檔案範例：")
     print(env_template)
-    
+
     print("\n在程式中使用：")
     print("```python")
     print("from dotenv import load_dotenv")
@@ -247,6 +250,7 @@ SECRET_KEY=your-secret-key-here
     print("load_dotenv()")
     print("api_key = os.getenv('OPENAI_API_KEY')")
     print("```")
+
 
 create_env_file()
 print()
@@ -263,7 +267,7 @@ checklist = [
     "□ 已加入使用量限制",
     "□ 已準備監控和日誌",
     "□ 已測試各種輸入情況",
-    "□ 已準備備援方案"
+    "□ 已準備備援方案",
 ]
 
 for item in checklist:
@@ -279,23 +283,23 @@ cost_estimation = {
     "開發階段": {
         "Gradio Share": "$0 (免費)",
         "HF Spaces": "$0 (免費版)",
-        "本地Ollama": "$0 (自己的電腦)"
+        "本地Ollama": "$0 (自己的電腦)",
     },
     "小規模 (<100用戶/天)": {
         "HF Spaces": "$0-9/月",
         "Streamlit": "$0",
-        "Render": "$7/月"
+        "Render": "$7/月",
     },
     "中規模 (100-1000用戶/天)": {
         "AWS EC2": "$20-50/月",
         "Google Cloud": "$25-60/月",
-        "Azure": "$30-70/月"
+        "Azure": "$30-70/月",
     },
     "大規模 (>1000用戶/天)": {
         "Kubernetes": "$100+/月",
         "Auto-scaling": "$200+/月",
-        "CDN + 負載均衡": "$500+/月"
-    }
+        "CDN + 負載均衡": "$500+/月",
+    },
 }
 
 for stage, options in cost_estimation.items():
@@ -308,7 +312,7 @@ for stage, options in cost_estimation.items():
 print("=== 快速部署腳本 ===")
 print()
 
-deploy_script = '''#!/bin/bash
+deploy_script = """#!/bin/bash
 
 echo "🚀 開始部署AI應用..."
 
@@ -340,7 +344,7 @@ python app.py
 
 echo "✅ 部署完成！"
 echo "訪問 http://localhost:7860"
-'''
+"""
 
 print("deploy.sh:")
 print(deploy_script)
@@ -355,14 +359,14 @@ monitoring_tips = [
     "🔔 警報設定：API額度、錯誤閾值、系統資源",
     "💾 備份策略：定期備份用戶資料和對話歷史",
     "🔄 更新計畫：模型更新、安全修補、功能迭代",
-    "📈 效能優化：快取、批次處理、非同步處理"
+    "📈 效能優化：快取、批次處理、非同步處理",
 ]
 
 for tip in monitoring_tips:
     print(tip)
 
 # === Step 10: 總結 ===
-print("\n" + "="*50)
+print("\n" + "=" * 50)
 print("=== 部署建議總結 ===")
 print()
 

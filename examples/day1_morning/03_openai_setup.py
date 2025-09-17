@@ -2,6 +2,7 @@
 # 10:30-11:00 環境設定與第一個API呼叫
 
 import os
+
 from dotenv import load_dotenv
 
 # === Step 1: 載入環境變數 ===
@@ -33,24 +34,22 @@ print()
 # === Step 4: 測試連線 ===
 try:
     from openai import OpenAI
-    
+
     # 初始化客戶端
     client = OpenAI(api_key=api_key)
-    
+
     print("=== 測試API連線 ===")
-    
+
     # 簡單的測試請求
     response = client.chat.completions.create(
         model="gpt-3.5-turbo",
-        messages=[
-            {"role": "user", "content": "說『你好』"}
-        ],
-        max_tokens=10
+        messages=[{"role": "user", "content": "說『你好』"}],
+        max_tokens=10,
     )
-    
+
     print("✅ 連線成功！")
     print(f"AI回應：{response.choices[0].message.content}")
-    
+
 except Exception as e:
     print("❌ 連線失敗")
     print(f"錯誤訊息：{e}")

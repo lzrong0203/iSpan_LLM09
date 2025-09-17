@@ -1,18 +1,21 @@
 # Day 1 下午：AI聊天機器人 - Ollama版本
 # 使用 Ollama gemma3:270m 模型
 
-import ollama
 from datetime import datetime
+
+import ollama
 
 # === Step 1: 初始化Ollama ===
 print("=== AI聊天機器人 (Ollama gemma3:270m) ===")
 print()
+
 
 # === Step 2: 基本AI Chatbot ===
 class OllamaChatbot:
     """
     使用Ollama API的聊天機器人
     """
+
     def __init__(self, model="gemma3:270m"):
         self.model = model
         self.messages = []
@@ -20,40 +23,30 @@ class OllamaChatbot:
 
     def add_system_message(self, content):
         """設定系統角色"""
-        self.messages.append({
-            "role": "system",
-            "content": content
-        })
+        self.messages.append({"role": "system", "content": content})
 
     def chat(self, user_input):
         """與AI對話"""
         # 加入使用者訊息
-        self.messages.append({
-            "role": "user",
-            "content": user_input
-        })
+        self.messages.append({"role": "user", "content": user_input})
 
         try:
             # 呼叫Ollama API
-            response = ollama.chat(
-                model=self.model,
-                messages=self.messages
-            )
+            response = ollama.chat(model=self.model, messages=self.messages)
 
             # 取得回應
-            ai_response = response['message']['content']
+            ai_response = response["message"]["content"]
 
             # 記錄token使用 (如果有提供)
-            if 'eval_count' in response:
-                self.total_tokens += response.get('prompt_eval_count', 0) + response.get('eval_count', 0)
+            if "eval_count" in response:
+                self.total_tokens += response.get(
+                    "prompt_eval_count", 0
+                ) + response.get("eval_count", 0)
 
             # 加入AI回應到歷史
-            self.messages.append({
-                "role": "assistant",
-                "content": ai_response
-            })
+            self.messages.append({"role": "assistant", "content": ai_response})
 
-            tokens_used = response.get('eval_count', 0)
+            tokens_used = response.get("eval_count", 0)
             return ai_response, tokens_used
 
         except Exception as e:
@@ -64,6 +57,7 @@ class OllamaChatbot:
         self.messages = []
         self.total_tokens = 0
 
+
 # === Step 3: 不同角色的Chatbot ===
 def create_role_chatbot(role_description):
     """建立特定角色的Chatbot"""
@@ -71,13 +65,15 @@ def create_role_chatbot(role_description):
     bot.add_system_message(role_description)
     return bot
 
+
 # 預設角色
 roles = {
     "助手": "你是一個友善的AI助手，用繁體中文回答",
     "老師": "你是一個有耐心的程式設計老師，會用簡單的方式解釋概念",
     "翻譯": "你是一個專業翻譯，將使用者的話翻譯成英文",
-    "詩人": "你是一個詩人，用優美的詩句回應"
+    "詩人": "你是一個詩人，用優美的詩句回應",
 }
+
 
 # === Step 4: 互動式對話 ===
 def interactive_ai_chat():
@@ -90,7 +86,7 @@ def interactive_ai_chat():
     choice = input("選擇 (1-4)：")
 
     # 建立Chatbot
-    role_name = list(roles.keys())[int(choice)-1] if choice.isdigit() else "助手"
+    role_name = list(roles.keys())[int(choice) - 1] if choice.isdigit() else "助手"
     bot = create_role_chatbot(roles[role_name])
 
     print(f"\n🤖 AI {role_name} 已啟動 (使用 gemma3:270m)")
@@ -100,12 +96,12 @@ def interactive_ai_chat():
     while True:
         user_input = input("👤 你：")
 
-        if user_input.lower() == 'quit':
+        if user_input.lower() == "quit":
             print(f"\n總共使用約 {bot.total_tokens} tokens")
             print("👋 再見！")
             break
 
-        if user_input.lower() == 'reset':
+        if user_input.lower() == "reset":
             bot.reset()
             bot.add_system_message(roles[role_name])
             print("✨ 對話已重置")
@@ -118,11 +114,13 @@ def interactive_ai_chat():
             print(f"   (生成 {tokens} tokens)")
         print()
 
+
 # === Step 5: 進階功能 ===
 class AdvancedOllamaChatbot(OllamaChatbot):
     """
     進階Chatbot with 額外功能
     """
+
     def __init__(self, model="gemma3:270m"):
         super().__init__(model)
         self.conversation_log = []
@@ -132,16 +130,16 @@ class AdvancedOllamaChatbot(OllamaChatbot):
         if not filename:
             filename = f"ollama_chat_{datetime.now().strftime('%Y%m%d_%H%M%S')}.txt"
 
-        with open(filename, 'w', encoding='utf-8') as f:
+        with open(filename, "w", encoding="utf-8") as f:
             f.write(f"=== Ollama對話記錄 ===\n")
             f.write(f"時間：{datetime.now()}\n")
             f.write(f"模型：{self.model}\n")
             f.write(f"總Token：{self.total_tokens}\n")
-            f.write("="*40 + "\n\n")
+            f.write("=" * 40 + "\n\n")
 
             for msg in self.messages:
-                if msg['role'] != 'system':
-                    role = "使用者" if msg['role'] == 'user' else "AI"
+                if msg["role"] != "system":
+                    role = "使用者" if msg["role"] == "user" else "AI"
                     f.write(f"{role}：{msg['content']}\n\n")
 
         print(f"對話已儲存到 {filename}")
@@ -157,15 +155,16 @@ class AdvancedOllamaChatbot(OllamaChatbot):
 
         return response
 
+
 # === Step 6: 測試模型連接 ===
 def test_model_connection():
     """測試Ollama連接和模型可用性"""
     try:
         # 測試連接
         models = ollama.list()
-        model_names = [m['name'] for m in models['models']]
+        model_names = [m["name"] for m in models["models"]]
 
-        if 'gemma3:270m' not in model_names:
+        if "gemma3:270m" not in model_names:
             print("⚠️  警告：gemma3:270m 模型未安裝")
             print("請執行：ollama pull gemma3:270m")
             return False
@@ -177,6 +176,7 @@ def test_model_connection():
         print(f"❌ Ollama連接失敗：{e}")
         print("請確認 Ollama 服務是否正在運行")
         return False
+
 
 # === Step 7: 執行程式 ===
 print("=== Ollama Chatbot (gemma3:270m) ===")
@@ -202,7 +202,7 @@ if mode == "1":
 
     while True:
         user_input = input("👤 你：")
-        if user_input.lower() == 'quit':
+        if user_input.lower() == "quit":
             break
         response, _ = bot.chat(user_input)
         print(f"🤖 AI：{response}\n")
@@ -223,13 +223,13 @@ elif mode == "3":
     while True:
         user_input = input("👤 你：")
 
-        if user_input.lower() == 'quit':
+        if user_input.lower() == "quit":
             bot.save_conversation()
             break
-        elif user_input.lower() == 'save':
+        elif user_input.lower() == "save":
             bot.save_conversation()
             continue
-        elif user_input.lower() == 'summary':
+        elif user_input.lower() == "summary":
             summary = bot.summarize_conversation()
             print(f"📝 總結：{summary}\n")
             continue

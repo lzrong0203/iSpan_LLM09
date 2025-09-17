@@ -1,10 +1,11 @@
 # Day 2 下午：Ollama本地部署
 # 13:30-14:30 本地LLM部署
 
-import subprocess
-import requests
 import json
+import subprocess
 import time
+
+import requests
 
 # === Step 1: Ollama介紹 ===
 print("=== Ollama本地LLM部署 ===")
@@ -40,7 +41,7 @@ models = [
     {"name": "mistral", "size": "4.1GB", "desc": "輕量但強大"},
     {"name": "codellama", "size": "3.8GB", "desc": "程式碼專用"},
     {"name": "phi", "size": "1.6GB", "desc": "微軟的小模型"},
-    {"name": "gemma", "size": "1.4GB", "desc": "Google的輕量模型"}
+    {"name": "gemma", "size": "1.4GB", "desc": "Google的輕量模型"},
 ]
 
 for model in models:
@@ -51,16 +52,17 @@ print("下載模型指令：")
 print("ollama pull llama2")
 print()
 
+
 # === Step 4: Ollama API客戶端 ===
 class OllamaClient:
     """Ollama API客戶端"""
-    
+
     def __init__(self, host="http://localhost:11434"):
         self.host = host
         self.api_generate = f"{host}/api/generate"
         self.api_chat = f"{host}/api/chat"
         self.api_tags = f"{host}/api/tags"
-    
+
     def check_connection(self) -> bool:
         """檢查Ollama是否運行"""
         try:
@@ -68,52 +70,45 @@ class OllamaClient:
             return response.status_code == 200
         except:
             return False
-    
+
     def list_models(self) -> list:
         """列出已安裝的模型"""
         try:
             response = requests.get(self.api_tags)
             if response.status_code == 200:
                 data = response.json()
-                return [model['name'] for model in data.get('models', [])]
+                return [model["name"] for model in data.get("models", [])]
             return []
         except Exception as e:
             print(f"錯誤：{e}")
             return []
-    
+
     def generate(self, model: str, prompt: str, stream: bool = False) -> str:
         """生成回應"""
-        payload = {
-            "model": model,
-            "prompt": prompt,
-            "stream": stream
-        }
-        
+        payload = {"model": model, "prompt": prompt, "stream": stream}
+
         try:
             response = requests.post(self.api_generate, json=payload)
             if response.status_code == 200:
                 data = response.json()
-                return data.get('response', '')
+                return data.get("response", "")
             return f"錯誤：{response.status_code}"
         except Exception as e:
             return f"錯誤：{e}"
-    
+
     def chat(self, model: str, messages: list, stream: bool = False) -> str:
         """對話模式"""
-        payload = {
-            "model": model,
-            "messages": messages,
-            "stream": stream
-        }
-        
+        payload = {"model": model, "messages": messages, "stream": stream}
+
         try:
             response = requests.post(self.api_chat, json=payload)
             if response.status_code == 200:
                 data = response.json()
-                return data.get('message', {}).get('content', '')
+                return data.get("message", {}).get("content", "")
             return f"錯誤：{response.status_code}"
         except Exception as e:
             return f"錯誤：{e}"
+
 
 # === Step 5: 測試Ollama ===
 print("=== 測試Ollama連線 ===")
@@ -123,7 +118,7 @@ ollama = OllamaClient()
 
 if ollama.check_connection():
     print("✅ Ollama正在運行")
-    
+
     # 列出模型
     models = ollama.list_models()
     if models:
@@ -141,75 +136,71 @@ else:
 
 print()
 
+
 # === Step 6: 簡單對話範例 ===
 def ollama_chat_demo():
     """Ollama對話示範"""
     print("=== Ollama對話示範 ===")
     print()
-    
+
     # 檢查連線
     if not ollama.check_connection():
         print("請先啟動Ollama服務")
         return
-    
+
     # 選擇模型
     models = ollama.list_models()
     if not models:
         print("請先下載模型：ollama pull llama2")
         return
-    
+
     model = models[0]  # 使用第一個可用模型
     print(f"使用模型：{model}")
     print()
-    
+
     # 對話迴圈
     messages = []
     print("開始對話（輸入'quit'結束）")
     print("-" * 40)
-    
+
     while True:
         user_input = input("👤 你：")
-        if user_input.lower() == 'quit':
+        if user_input.lower() == "quit":
             break
-        
+
         # 添加使用者訊息
-        messages.append({
-            "role": "user",
-            "content": user_input
-        })
-        
+        messages.append({"role": "user", "content": user_input})
+
         # 取得回應
         print("🤖 AI：", end="", flush=True)
         response = ollama.chat(model, messages)
         print(response)
-        
+
         # 添加AI回應
-        messages.append({
-            "role": "assistant",
-            "content": response
-        })
+        messages.append({"role": "assistant", "content": response})
         print()
+
 
 # === Step 7: 比較不同模型 ===
 def compare_models():
     """比較不同模型的回應"""
     print("=== 比較不同模型 ===")
     print()
-    
+
     if not ollama.check_connection():
         print("Ollama未運行")
         return
-    
+
     models = ollama.list_models()
     if len(models) < 2:
         print("需要至少2個模型來比較")
         return
-    
+
     prompt = "用一句話解釋什麼是人工智慧"
-    
+
     print(f"測試提示：{prompt}")
     print("=" * 50)
-    
+
     for model in models[:3]:  # 最多比較3個模型
         print(f"\n模型：{model}")
         start_time = time.time()
@@ -218,27 +209,28 @@ def compare_models():
         print(f"回應：{response}")
         print(f"時間：{elapsed:.2f}秒")
 
+
 # === Step 8: 本地RAG系統 ===
 class LocalRAG:
     """使用Ollama的本地RAG系統"""
-    
+
     def __init__(self, model="llama2"):
         self.model = model
         self.ollama = OllamaClient()
         self.knowledge_base = []
-    
+
     def add_knowledge(self, text: str):
         """添加知識"""
         self.knowledge_base.append(text)
-    
+
     def answer(self, question: str) -> str:
         """回答問題"""
         if not self.knowledge_base:
             return "知識庫為空"
-        
+
         # 建立上下文
         context = "\n".join(self.knowledge_base)
-        
+
         # 建立提示
         prompt = f"""基於以下資料回答問題：
 
@@ -248,8 +240,9 @@ class LocalRAG:
 問題：{question}
 
 答案："""
-        
+
         return self.ollama.generate(self.model, prompt)
+
 
 # === Step 9: 執行示範 ===
 print("=== 選擇功能 ===")
@@ -272,18 +265,18 @@ elif choice == "3":
 elif choice == "4":
     print("\n=== 本地RAG系統 ===")
     rag = LocalRAG()
-    
+
     # 添加知識
     rag.add_knowledge("Python是1991年由Guido van Rossum創造的程式語言")
     rag.add_knowledge("Python強調程式碼的可讀性和簡潔性")
-    
+
     # 測試問答
     question = "Python是什麼時候創造的？"
     print(f"問題：{question}")
     print(f"答案：{rag.answer(question)}")
 
 # === Step 10: 部署建議 ===
-print("\n" + "="*50)
+print("\n" + "=" * 50)
 print("=== Ollama部署建議 ===")
 print()
 
@@ -293,7 +286,7 @@ tips = [
     "🚀 GPU加速：支援NVIDIA顯卡加速",
     "🌐 API服務：可作為API服務供其他應用呼叫",
     "🔒 安全性：預設只監聽localhost",
-    "📦 Docker：支援Docker容器部署"
+    "📦 Docker：支援Docker容器部署",
 ]
 
 for tip in tips:

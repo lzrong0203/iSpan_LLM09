@@ -1,0 +1,17 @@
+# Minimal Requirements for RAG System
+# Essential packages only
+
+# Embeddings
+sentence-transformers>=2.2.0
+
+# Vector database
+faiss-cpu>=1.7.4
+
+# PDF processing
+pypdf>=3.17.0
+
+# Data processing
+numpy>=1.24.0
+
+# API requests (for Ollama)
+requests>=2.31.0
